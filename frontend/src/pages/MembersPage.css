@@ -1,0 +1,366 @@
+.member-head-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.member-search-wrap {
+  min-width: 320px;
+}
+
+.member-search-wrap .material-symbols-outlined {
+  color: #8da0be;
+}
+
+/* ─── Members table ─────────────────────────────────── */
+.member-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.member-avatar-inline {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f80f7, #7c3aed);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.member-name-cell strong {
+  font-size: 0.95rem;
+  display: block;
+}
+
+.member-name-cell small,
+.member-contact-cell small {
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  display: block;
+}
+
+.member-contact-cell {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.member-contact-cell span {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.member-options-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-width: 360px;
+}
+
+.member-option-chip {
+  background: #eef4ff;
+  border: 1px solid #d8e3ff;
+  border-radius: 999px;
+  color: #3a5fb5;
+  display: inline-flex;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 0.36rem 0.58rem;
+}
+
+/* ─── History Modal ─────────────────────────────────── */
+.member-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding: 2rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.member-history-modal {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.18);
+  width: 100%;
+  max-width: 760px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mhm-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.8rem;
+  border-bottom: 1px solid var(--line, #e9edf4);
+  background: #fafbff;
+}
+
+.mhm-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f80f7, #7c3aed);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(79, 128, 247, 0.3);
+}
+
+.mhm-headerinfo {
+  flex: 1;
+}
+
+.mhm-headerinfo h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.mhm-headerinfo span {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+.mhm-close-btn {
+  background: #f1f4f9;
+  color: #576985;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.mhm-close-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.mhm-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 1.5rem 1.8rem;
+  background: #fff;
+}
+
+.mhm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  color: var(--text-soft);
+  gap: 0.75rem;
+}
+
+.mhm-empty .material-symbols-outlined {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+/* ─── Git Timeline ───────────────────────────────────── */
+.git-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.git-node-row {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.git-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  padding-top: 4px;
+}
+
+.git-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.git-line {
+  width: 2px;
+  flex: 1;
+  background: var(--line, #e9edf4);
+  margin-top: 4px;
+  margin-bottom: -4px;
+}
+
+.git-card {
+  flex: 1;
+  background: #fafbff;
+  border: 1px solid var(--line, #e9edf4);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.git-card:hover {
+  box-shadow: 0 4px 16px rgba(58, 111, 247, 0.07);
+  border-color: var(--brand, #3a6ff7);
+}
+
+.git-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.git-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.git-order-id {
+  font-size: 0.78rem;
+  background: #f1f5f9;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.git-date {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.git-date-return {
+  color: #2563eb;
+}
+
+.git-status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.git-purpose {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  margin: 0.3rem 0 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.git-items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.git-item-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.git-item-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.git-item-qty {
+  color: var(--text-soft);
+}
+
+.git-item-ret {
+  color: #059669;
+  font-weight: 600;
+}
+
+.git-item-pend {
+  color: #d97706;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .member-head-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .member-search-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .member-history-modal {
+    max-height: 95vh;
+    border-radius: 14px;
+  }
+}
