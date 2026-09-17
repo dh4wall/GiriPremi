@@ -1,12 +1,16 @@
 """
 Database configuration module.
 Handles MySQL connection using SQLAlchemy.
+Credentials are loaded from .env via app.config.
 """
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import get_settings
 
-DATABASE_URL = "mysql+pymysql://root:pranisha@localhost:3306/equipment"
+settings = get_settings()
+
+DATABASE_URL = settings.get_database_url()
 
 engine = create_engine(
     DATABASE_URL,

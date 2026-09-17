@@ -1,7 +1,9 @@
+import { getAuthHeaders } from './authApi'
+
 const BASE = "/api";
 
 export const fetchUsers = async () => {
-    const response = await fetch(`${BASE}/users/`);
+    const response = await fetch(`${BASE}/users/`, { headers: getAuthHeaders() });
     if (!response.ok) throw new Error("Failed to fetch users");
     return response.json();
 };
@@ -9,7 +11,7 @@ export const fetchUsers = async () => {
 export const createUser = async (userData) => {
     const response = await fetch(`${BASE}/users/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(userData),
     });
     if (!response.ok) throw new Error("Failed to create user");
@@ -19,7 +21,7 @@ export const createUser = async (userData) => {
 export const updateUser = async (userId, userData) => {
     const response = await fetch(`${BASE}/users/${userId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(userData),
     });
     if (!response.ok) throw new Error("Failed to update user");

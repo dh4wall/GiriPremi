@@ -15,12 +15,11 @@ import { fetchUsers } from './api/usersApi'
 import { createOrder } from './api/ordersApi'
 import { fetchStores, createStore, deleteStore } from './api/storesApi'
 import { fetchInventory } from './api/inventoryApi'
+import { getToken, clearToken, getMe } from './api/authApi'
 import StoresModal from './pages/StoresModal'
 import ReturnPage from './pages/ReturnPage'
 
 // ─── Static/mock data (pages not yet wired to backend) ───────────────────────
-
-// removed static members
 
 const inspections = [
   { item: 'Dynamic Rope Lot A', priority: 'High', category: 'Ropes', due: 'Due today at 6:00 PM', statusTone: 'red' },
@@ -33,6 +32,12 @@ const reports = [
   { title: 'Issue And Return Summary', period: 'Week 11', generated: '14 Mar 2026, 10:40 AM' },
   { title: 'Inspection Compliance', period: 'Q1 2026', generated: '13 Mar 2026, 05:15 PM' },
 ]
+
+const ROLE_CONFIG = {
+  superAdmin: { label: 'Super Admin', initials: 'SU', color: '#8a4fff', bg: '#f2ebff', badge: 'violet' },
+  storeAdmin: { label: 'Store Admin', initials: 'SA', color: '#3a6ff7', bg: '#edf3ff', badge: 'blue' },
+  member: { label: 'Member', initials: 'MB', color: '#2fa866', bg: '#eaf9ef', badge: 'green' },
+}
 
 const pages = [
   { id: 'dashboard', label: 'Dashboard', icon: 'space_dashboard' },
@@ -94,6 +99,7 @@ function App() {
   const [showEquipmentModal, setShowEquipmentModal] = useState(false)
   const [showStoresModal, setShowStoresModal] = useState(false)
   const [userType, setUserType] = useState('storeAdmin')
+  const [fullName, setFullName] = useState('')
   const [addEquipmentRequest, setAddEquipmentRequest] = useState(0)
   const [toast, setToast] = useState(null)
 
@@ -107,6 +113,22 @@ function App() {
   const [categories, setCategories] = useState([])
   const [stores, setStores] = useState([])
   const [members, setMembers] = useState([])
+
+  // ── On mount: restore session from localStorage ───────────────────────────
+  useEffect(() => {
+    const token = getToken()
+    if (token) {
+      getMe()
+        .then((me) => {
+          setUserType(me.user_type)
+          setFullName(me.full_name)
+          setIsLoggedIn(true)
+        })
+        .catch(() => {
+          clearToken()
+        })
+    }
+  }, [])
 
   const loadStores = useCallback(async () => {
     try {
@@ -136,10 +158,12 @@ function App() {
       showToast(err.message, 'error')
     }
   }
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const isStoreAdmin = userType === 'storeAdmin'
   const isSuperAdmin = userType === 'superAdmin'
+  const isMember = userType === 'member'
 
   // ── Fetch equipment + categories from API ───────────────────────────────────
   const loadData = useCallback(async () => {
@@ -220,11 +244,23 @@ function App() {
   const recentActivity = []
 
   // ── Handlers ────────────────────────────────────────────────────────────────
-  function handleLogin(_username, _password, selectedUserType) {
-    setUserType(selectedUserType)
+  function handleLogin(name, type, tokenData) {
+    setUserType(type || tokenData?.user_type || 'storeAdmin')
+    setFullName(name || tokenData?.full_name || '')
     setShowLogin(false)
     setIsLoggedIn(true)
     setActivePage('dashboard')
+  }
+
+  function handleLogout() {
+    clearToken()
+    setIsLoggedIn(false)
+    setShowLogin(false)
+    setShowIssueModal(false)
+    setInventoryItems([])
+    setCategories([])
+    setFullName('')
+    setUserType('storeAdmin')
   }
 
   async function handleAddEquipment(formData) {
@@ -360,7 +396,7 @@ function App() {
           <IssueReturnPage
             members={members}
             onContinue={() => setShowIssueModal(true)}
-            readOnly={false}
+            readOnly={isMember}
             userType={userType}
           />
         )
@@ -368,18 +404,18 @@ function App() {
         return (
           <ReturnPage
             members={members}
-            readOnly={isSuperAdmin}
+            readOnly={isMember || isSuperAdmin}
             userType={userType}
             stores={stores}
             showToast={showToast}
           />
         )
       case 'members':
-        return <MembersPage members={members} onAddMember={() => window.alert('Add member flow.')} readOnly={isSuperAdmin} />
+        return <MembersPage members={members} onAddMember={() => window.alert('Add member flow.')} readOnly={isMember || isSuperAdmin} />
       case 'inspections':
-        return <InspectionsPage inspections={inspections} onNewInspection={() => window.alert('Create inspection flow.')} readOnly={isSuperAdmin} />
+        return <InspectionsPage inspections={inspections} onNewInspection={() => window.alert('Create inspection flow.')} readOnly={isMember || isSuperAdmin} />
       case 'reports':
-        return <ReportsPage onExportReport={() => window.alert('Report export triggered.')} readOnly={isSuperAdmin} reports={reports} />
+        return <ReportsPage onExportReport={() => window.alert('Report export triggered.')} readOnly={isMember || isSuperAdmin} reports={reports} />
       default:
         return (
           <DashboardPage
@@ -388,13 +424,15 @@ function App() {
             onOpenReports={() => setActivePage('reports')}
             onOpenReturn={() => setActivePage('return')}
             onPageChange={() => { }}
-            readOnly={isSuperAdmin}
+            readOnly={isMember || isSuperAdmin}
             recentActivity={recentActivity}
             summaryCards={summaryCards}
           />
         )
     }
   }
+
+  const roleInfo = ROLE_CONFIG[userType] || ROLE_CONFIG.storeAdmin
 
   if (!isLoggedIn) return renderPage()
 
@@ -407,21 +445,23 @@ function App() {
           </div>
           <div>
             <strong>Giripremi Store</strong>
-            <small>Store Manager</small>
+            <small>IMS Portal</small>
           </div>
         </button>
 
         <nav className="sidebar-nav">
           <small>Main Navigation</small>
-          {pages.map((page) => (
+          {pages.map((page, i) => (
             <button
               key={page.id}
               type="button"
               className={`sidebar-link ${activePage === page.id ? 'active' : ''}`}
               onClick={() => setActivePage(page.id)}
+              style={{ animationDelay: `${i * 40}ms` }}
             >
               <span className="material-symbols-outlined">{page.icon}</span>
               <span>{page.label}</span>
+              {activePage === page.id && <span className="sidebar-active-dot" />}
             </button>
           ))}
         </nav>
@@ -433,21 +473,26 @@ function App() {
           </button>
 
           <div className="sidebar-profile">
-            <div className="sidebar-avatar">{isStoreAdmin ? 'SA' : 'SU'}</div>
-            <div>
-              <strong>{isStoreAdmin ? 'Store Admin' : 'Super Admin'}</strong>
-              <small>Logged in</small>
+            <div
+              className="sidebar-avatar"
+              style={{ background: roleInfo.bg, color: roleInfo.color }}
+            >
+              {roleInfo.initials}
+            </div>
+            <div className="sidebar-profile-info">
+              <strong>{fullName || roleInfo.label}</strong>
+              <span
+                className={`mini-tag ${roleInfo.badge}`}
+                style={{ marginTop: '2px' }}
+              >
+                {roleInfo.label}
+              </span>
             </div>
             <button
               className="sidebar-logout"
               type="button"
-              onClick={() => {
-                setIsLoggedIn(false)
-                setShowLogin(false)
-                setShowIssueModal(false)
-                setInventoryItems([])
-                setCategories([])
-              }}
+              onClick={handleLogout}
+              title="Logout"
             >
               <span className="material-symbols-outlined">logout</span>
             </button>
@@ -509,25 +554,8 @@ function App() {
 
       {/* Global Toast Notification */}
       {toast && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          background: toast.type === 'error' ? '#fef2f2' : '#ecfdf5',
-          color: toast.type === 'error' ? '#991b1b' : '#065f46',
-          border: `1px solid ${toast.type === 'error' ? '#fecaca' : '#a7f3d0'}`,
-          padding: '12px 20px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          fontWeight: 500,
-          fontSize: '0.9rem',
-          animation: 'slideIn 0.3s ease-out forwards'
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>
+        <div className={`app-toast app-toast--${toast.type}`}>
+          <span className="material-symbols-outlined">
             {toast.type === 'error' ? 'error' : 'check_circle'}
           </span>
           {toast.message}

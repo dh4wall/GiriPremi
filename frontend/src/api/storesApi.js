@@ -1,7 +1,9 @@
+import { getAuthHeaders } from './authApi'
+
 const BASE = "/api";
 
 export const fetchStores = async () => {
-    const response = await fetch(`${BASE}/stores/`);
+    const response = await fetch(`${BASE}/stores/`, { headers: getAuthHeaders() });
     if (!response.ok) throw new Error("Failed to fetch stores");
     return response.json();
 };
@@ -9,7 +11,7 @@ export const fetchStores = async () => {
 export const createStore = async (storeData) => {
     const response = await fetch(`${BASE}/stores/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(storeData),
     });
     if (!response.ok) {
@@ -22,6 +24,7 @@ export const createStore = async (storeData) => {
 export const deleteStore = async (storeId) => {
     const response = await fetch(`${BASE}/stores/${storeId}`, {
         method: "DELETE",
+        headers: getAuthHeaders(),
     });
     if (!response.ok) {
         const err = await response.json().catch(() => ({ detail: "Failed to delete store" }));

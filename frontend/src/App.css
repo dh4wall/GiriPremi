@@ -506,32 +506,98 @@ table {
   background: #fff;
 }
 
+/* ─── Enhanced Login Screen ──────────────────────────────────────────────── */
+
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -40px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(0.97); }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-40px, 30px) scale(1.08); }
+  70%       { transform: translate(20px, -15px) scale(0.95); }
+}
+
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(25px, 35px) scale(1.06); }
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-ring {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(80px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes sidebarLinkIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 .login-screen {
   align-items: center;
-  background:
-    radial-gradient(circle at top center, rgba(58, 111, 247, 0.08), transparent 28%),
-    linear-gradient(180deg, #fbfcff 0%, #f3f7ff 60%, #eef4ff 100%);
+  background: linear-gradient(135deg, #0d1b3e 0%, #162350 40%, #1e3a8a 70%, #1d2b6b 100%);
   display: flex;
   justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
   padding: 2rem 1rem;
+  position: relative;
 }
 
-.login-wave {
-  background: radial-gradient(circle at 50% 10%, rgba(58, 111, 247, 0.08), transparent 26%);
-  inset: 0;
+/* Animated background orbs */
+.login-orb {
+  border-radius: 50%;
+  filter: blur(72px);
+  pointer-events: none;
   position: absolute;
 }
 
-.login-screen::after {
-  background: linear-gradient(180deg, rgba(73, 123, 248, 0.08), rgba(73, 123, 248, 0.18));
-  border-radius: 50% 50% 0 0;
-  bottom: -120px;
-  content: '';
-  height: 240px;
-  left: -5%;
-  position: absolute;
-  width: 110%;
+.login-orb-1 {
+  animation: orb-float-1 9s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(58, 111, 247, 0.55), rgba(58, 111, 247, 0.1));
+  height: 420px;
+  left: -80px;
+  top: -60px;
+  width: 420px;
 }
+
+.login-orb-2 {
+  animation: orb-float-2 12s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(138, 79, 255, 0.45), rgba(138, 79, 255, 0.05));
+  bottom: -100px;
+  height: 380px;
+  right: -60px;
+  width: 380px;
+}
+
+.login-orb-3 {
+  animation: orb-float-3 7s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(47, 168, 102, 0.3), rgba(47, 168, 102, 0.03));
+  height: 260px;
+  right: 30%;
+  top: 60%;
+  width: 260px;
+}
+
+.login-wave { display: none; }
+
+.login-screen::after { display: none; }
 
 .login-card,
 .table-shell,
@@ -1186,3 +1252,352 @@ select {
     font-size: 2.5rem;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   NEW: Glassmorphism Login Card
+   ════════════════════════════════════════════════════════════ */
+
+.login-card-glass {
+  animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  color: #fff;
+  max-width: 460px;
+  padding: 2.2rem 2rem;
+  border-radius: 24px !important;
+}
+
+.login-card-glass .login-head h2 {
+  color: #fff;
+  font-size: 1.7rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.login-card-glass .login-head p {
+  color: rgba(210, 225, 255, 0.8);
+  font-size: 0.92rem;
+}
+
+.login-brand-icon {
+  align-items: center;
+  background: linear-gradient(135deg, #4a7cfb, #2957d6);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(58, 111, 247, 0.5);
+  color: #fff;
+  display: inline-flex;
+  height: 56px;
+  justify-content: center;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  width: 56px;
+}
+
+.login-brand-icon:hover {
+  box-shadow: 0 12px 32px rgba(58, 111, 247, 0.7);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.login-brand-icon .material-symbols-outlined {
+  font-size: 1.75rem;
+}
+
+/* Form */
+.login-form {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.6rem;
+}
+
+.login-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.login-field > label {
+  align-items: center;
+  color: rgba(200, 220, 255, 0.85) !important;
+  display: inline-flex;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  gap: 0.4rem;
+}
+
+.login-field > label .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+.login-input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-size: 0.95rem;
+  padding: 0.9rem 1rem !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+  width: 100%;
+}
+
+.login-input::placeholder {
+  color: rgba(160, 185, 230, 0.6) !important;
+}
+
+.login-input:focus {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(99, 147, 255, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(58, 111, 247, 0.22);
+  outline: none;
+}
+
+/* Password wrapper */
+.login-password-wrap {
+  position: relative;
+}
+
+.login-password-wrap .login-input {
+  padding-right: 3rem !important;
+}
+
+.login-toggle-pw {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: rgba(160, 185, 230, 0.7);
+  cursor: pointer;
+  display: inline-flex;
+  height: 100%;
+  justify-content: center;
+  padding: 0 0.75rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: color 150ms;
+}
+
+.login-toggle-pw:hover {
+  color: #fff;
+  transform: none;
+}
+
+/* Role tabs */
+.login-role-tabs {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.login-role-tab {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: rgba(200, 218, 255, 0.75);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.7rem 0.4rem;
+  text-align: center;
+  transition: all 200ms ease;
+}
+
+.login-role-tab .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.login-role-tab:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.login-role-tab.active {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.login-role-desc {
+  align-items: center;
+  border-radius: 10px;
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 500;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Error banner */
+.login-error-banner {
+  align-items: center;
+  animation: card-in 0.3s ease both;
+  background: rgba(229, 80, 80, 0.18);
+  border: 1px solid rgba(229, 80, 80, 0.35);
+  border-radius: 12px;
+  color: #ffa8a8;
+  display: flex;
+  font-size: 0.88rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Remember row in glass mode */
+.login-card-glass .remember-row {
+  color: rgba(200, 218, 255, 0.75);
+}
+
+.login-card-glass .link-btn {
+  color: rgba(130, 170, 255, 0.9);
+}
+
+.login-card-glass .checkbox-row input {
+  accent-color: #4a7cfb;
+}
+
+/* Submit button */
+.login-submit-btn {
+  align-items: center;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 700;
+  gap: 0.6rem;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  min-height: 52px;
+  transition: opacity 200ms, transform 200ms, box-shadow 200ms;
+  width: 100%;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  opacity: 0.93;
+  transform: translateY(-2px);
+}
+
+.login-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+/* Loading spinner */
+.login-spinner {
+  animation: spin-ring 0.75s linear infinite;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+}
+
+/* Footer */
+.login-card-glass .login-foot {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+}
+
+.login-card-glass .login-foot small {
+  color: rgba(180, 205, 255, 0.65);
+}
+
+/* ════════════════════════════════════════════════════════════
+   Enhanced Sidebar Animations
+   ════════════════════════════════════════════════════════════ */
+
+.sidebar-link {
+  animation: sidebarLinkIn 0.35s ease both;
+  position: relative;
+}
+
+.sidebar-link.active {
+  background: linear-gradient(90deg, #ddeaff 0%, #eaf1ff 100%);
+  border-left: 3px solid var(--brand);
+  box-shadow: 0 2px 8px rgba(58, 111, 247, 0.12);
+  color: var(--brand);
+  font-weight: 700;
+  padding-left: calc(0.9rem - 3px);
+}
+
+.sidebar-active-dot {
+  background: var(--brand);
+  border-radius: 50%;
+  height: 6px;
+  margin-left: auto;
+  width: 6px;
+}
+
+.sidebar-brand-mark {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.sidebar-brand:hover .sidebar-brand-mark {
+  box-shadow: 0 8px 20px rgba(58, 111, 247, 0.4);
+  transform: scale(1.07);
+}
+
+.sidebar-profile-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sidebar-profile-info strong {
+  display: block;
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Enhanced Toast Notification
+   ════════════════════════════════════════════════════════════ */
+
+.app-toast {
+  align-items: center;
+  animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  border-radius: 14px;
+  bottom: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  display: flex;
+  font-size: 0.92rem;
+  font-weight: 600;
+  gap: 0.6rem;
+  max-width: 380px;
+  padding: 0.9rem 1.2rem;
+  position: fixed;
+  right: 24px;
+  z-index: 9999;
+}
+
+.app-toast--success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.app-toast--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.app-toast .material-symbols-outlined {
+  font-size: 1.25rem;
+}
