@@ -1,7 +1,7 @@
 // API functions for category endpoints
 import { getAuthHeaders } from './authApi'
 
-const BASE = '/api'
+import { API_BASE_URL as BASE } from './config'
 
 export async function fetchCategories() {
     const res = await fetch(`${BASE}/categories/`, { headers: getAuthHeaders() })

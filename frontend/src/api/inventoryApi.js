@@ -1,6 +1,6 @@
 import { getAuthHeaders } from './authApi'
+import { API_BASE_URL as BASE } from './config'
 
-const BASE = "/api";
 
 export const fetchInventory = async () => {
     const response = await fetch(`${BASE}/inventory/`, { headers: getAuthHeaders() });

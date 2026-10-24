@@ -1,4 +1,4 @@
-const BASE = "/api";
+import { API_BASE_URL as BASE } from './config'
 
 // ── Token storage ─────────────────────────────────────────────────────────────
 

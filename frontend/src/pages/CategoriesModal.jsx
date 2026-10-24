@@ -82,7 +82,7 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
 
     return (
         <div className="modal-backdrop" role="presentation">
-            <div className="equipment-modal" style={{ maxWidth: 640, width: '100%' }}>
+            <div className="equipment-modal reference-management-modal reference-categories-modal">
                 {/* Header */}
                 <div className="modal-head">
                     <div>
@@ -95,8 +95,8 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
                 </div>
 
                 {/* Action bar and File Preview */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 1.5rem 0' }}>
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <div className="management-action-area">
+                    <div className="management-action-row">
                         <button
                             className="primary-btn"
                             type="button"
@@ -116,7 +116,7 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
                                 <span>Import from Excel</span>
                             </button>
                         ) : (
-                            <div style={{
+                            <div className="management-file-chip" style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',
@@ -156,7 +156,7 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
                 </div>
 
                 {importStatus && (
-                    <div style={{
+                    <div className="management-import-status" style={{
                         margin: '0.75rem 1.5rem 0',
                         padding: '0.8rem 1rem',
                         borderRadius: '8px',
@@ -196,7 +196,7 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
 
                 {/* Add Category Form */}
                 {showForm && (
-                    <form onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
+                    <form className="management-form" onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
                         <div className="equipment-modal-body" style={{ gap: '0.6rem', padding: '0.5rem 0' }}>
                             <label htmlFor="cat-name">Category Name *</label>
                             <input
@@ -289,7 +289,7 @@ function CategoriesModal({ categories, onClose, onAddCategory, onImportCategorie
                 )}
 
                 {/* Category list */}
-                <div style={{ padding: '0 1.5rem 1.5rem' }}>
+                <div className="management-list" style={{ padding: '0 1.5rem 1.5rem' }}>
                     <p style={{ fontSize: '0.8rem', marginBottom: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
                         Existing Categories
                     </p>

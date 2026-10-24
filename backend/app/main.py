@@ -7,7 +7,9 @@ from app.routers import order_router
 from app.routers import equipment_qty_router
 from app.routers import store_router
 from app.routers import inventory_router
+from app.routers import dashboard_router
 from app.routers import auth_router
+from app.config import get_settings
 
 app = FastAPI(
     title="GiriPremi IMS API",
@@ -15,9 +17,11 @@ app = FastAPI(
     version="2.0.0",
 )
 
+settings = get_settings()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[origin.strip() for origin in settings.frontend_origins.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,3 +38,4 @@ app.include_router(order_router.router)
 app.include_router(equipment_qty_router.router)
 app.include_router(store_router.router)
 app.include_router(inventory_router.router)
+app.include_router(dashboard_router.router)

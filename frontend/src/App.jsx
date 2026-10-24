@@ -18,6 +18,7 @@ import { fetchInventory } from './api/inventoryApi'
 import { getToken, clearToken, getMe } from './api/authApi'
 import StoresModal from './pages/StoresModal'
 import ReturnPage from './pages/ReturnPage'
+import { fetchDashboardTelemetry } from './api/dashboardApi'
 
 // ─── Static/mock data (pages not yet wired to backend) ───────────────────────
 
@@ -36,18 +37,22 @@ const reports = [
 const ROLE_CONFIG = {
   superAdmin: { label: 'Super Admin', initials: 'SU', color: '#8a4fff', bg: '#f2ebff', badge: 'violet' },
   storeAdmin: { label: 'Store Admin', initials: 'SA', color: '#3a6ff7', bg: '#edf3ff', badge: 'blue' },
-  member: { label: 'Member', initials: 'MB', color: '#2fa866', bg: '#eaf9ef', badge: 'green' },
 }
 
 const pages = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'space_dashboard' },
-  { id: 'inventory', label: 'Inventory', icon: 'inventory_2' },
-  { id: 'issue-return', label: 'Issue Equipment', icon: 'outbound' },
-  { id: 'return', label: 'Return Equipment', icon: 'assignment_return' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { id: 'inventory', label: 'Inventory', icon: 'backpack' },
+  { id: 'issue-return', label: 'Issue Equipment', icon: 'outbox' },
+  { id: 'return', label: 'Return Equipment', icon: 'move_to_inbox' },
   { id: 'members', label: 'Members', icon: 'group' },
-  { id: 'inspections', label: 'Inspections', icon: 'rule' },
-  { id: 'reports', label: 'Reports', icon: 'bar_chart' },
+  { id: 'inspections', label: 'Inspections', icon: 'verified' },
+  { id: 'reports', label: 'Reports', icon: 'analytics' },
 ]
+
+const ROLE_PAGE_ACCESS = {
+  superAdmin: pages.map((page) => page.id),
+  storeAdmin: ['dashboard', 'inventory', 'issue-return', 'return', 'members', 'inspections', 'reports'],
+}
 
 // ─── Store name → id mapping (matches seeded stores) ─────────────────────────
 const STORE_MAP = { 'Store 1': 1, 'Store 2': 2, 'Base Camp Warehouse': 3 }
@@ -91,8 +96,12 @@ function toTableItem(equipment, categories, storeName = 'Total/Mixed', qty = nul
 }
 
 function App() {
-  const [activePage, setActivePage] = useState('dashboard')
-  const [showLogin, setShowLogin] = useState(false)
+  const pageForPath = (path) => {
+    const page = path.replace(/^\/+/, '').split('/')[0]
+    return pages.some((candidate) => candidate.id === page) ? page : 'dashboard'
+  }
+  const [activePage, setActivePage] = useState(() => pageForPath(window.location.pathname))
+  const [showLogin, setShowLogin] = useState(() => window.location.pathname === '/login')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showIssueModal, setShowIssueModal] = useState(false)
   const [showCategoriesModal, setShowCategoriesModal] = useState(false)
@@ -102,6 +111,21 @@ function App() {
   const [fullName, setFullName] = useState('')
   const [addEquipmentRequest, setAddEquipmentRequest] = useState(0)
   const [toast, setToast] = useState(null)
+
+  const navigate = useCallback((path) => {
+    window.history.pushState({}, '', path)
+    setShowLogin(path === '/login')
+    setActivePage(pageForPath(path))
+  }, [])
+
+  useEffect(() => {
+    const handleNavigation = () => {
+      setShowLogin(window.location.pathname === '/login')
+      setActivePage(pageForPath(window.location.pathname))
+    }
+    window.addEventListener('popstate', handleNavigation)
+    return () => window.removeEventListener('popstate', handleNavigation)
+  }, [])
 
   function showToast(message, type = 'success') {
     setToast({ message, type })
@@ -113,6 +137,9 @@ function App() {
   const [categories, setCategories] = useState([])
   const [stores, setStores] = useState([])
   const [members, setMembers] = useState([])
+  const [landingStats, setLandingStats] = useState(null)
+  const [landingStatsError, setLandingStatsError] = useState('')
+  const [dashboardTelemetry, setDashboardTelemetry] = useState(null)
 
   // ── On mount: restore session from localStorage ───────────────────────────
   useEffect(() => {
@@ -143,6 +170,28 @@ function App() {
     loadStores()
   }, [loadStores])
 
+  useEffect(() => {
+    let cancelled = false
+
+    Promise.all([fetchEquipment(), fetchCategories(), fetchInventory(), fetchStores()])
+      .then(([equipment, cats, inventory, storeList]) => {
+        if (cancelled) return
+        setLandingStats({
+          equipment: equipment.length,
+          categories: cats.length,
+          inventoryUnits: inventory.reduce((total, item) => total + (item.quantity || 0), 0),
+          stores: storeList.length,
+        })
+      })
+      .catch((err) => {
+        if (!cancelled) setLandingStatsError(err.message || 'Unable to load platform statistics.')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const handleAddStore = async (storeData) => {
     const newStore = await createStore(storeData)
     setStores((prev) => [...prev, newStore])
@@ -163,19 +212,20 @@ function App() {
   const [error, setError] = useState(null)
   const isStoreAdmin = userType === 'storeAdmin'
   const isSuperAdmin = userType === 'superAdmin'
-  const isMember = userType === 'member'
+  const allowedPages = ROLE_PAGE_ACCESS[userType] || ROLE_PAGE_ACCESS.storeAdmin
 
   // ── Fetch equipment + categories from API ───────────────────────────────────
   const loadData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const [equipment, cats, membersData, storesData, inventoryData] = await Promise.all([
+      const [equipment, cats, membersData, storesData, inventoryData, telemetry] = await Promise.all([
         fetchEquipment(),
         fetchCategories(),
         fetchUsers(),
         fetchStores(),
-        fetchInventory()
+        fetchInventory(),
+        fetchDashboardTelemetry()
       ])
       setCategories(cats)
       setMembers(membersData)
@@ -214,6 +264,7 @@ function App() {
       })
 
       setInventoryItems(granularItems)
+      setDashboardTelemetry(telemetry)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -228,34 +279,18 @@ function App() {
   }, [isLoggedIn, loadData])
 
   // ── Summary cards (computed from live data) ─────────────────────────────────
-  const summaryCards = [
-    {
-      title: 'Available Gear',
-      value: loading ? '…' : String(inventoryItems.filter((i) => i.status === 'Available').length),
-      icon: 'inventory_2',
-      tone: 'green',
-      tag: 'In Stock',
-    },
-    { title: 'Issued Today', value: '—', icon: 'outbound', tone: 'amber', tag: 'Live' },
-    { title: 'Due For Inspection', value: String(inspections.length), icon: 'rule', tone: 'red', tag: 'Action' },
-    { title: 'Active Members', value: String(members.length), icon: 'groups', tone: 'blue', tag: 'Updated' },
-  ]
-
-  const recentActivity = []
-
   // ── Handlers ────────────────────────────────────────────────────────────────
   function handleLogin(name, type, tokenData) {
     setUserType(type || tokenData?.user_type || 'storeAdmin')
     setFullName(name || tokenData?.full_name || '')
-    setShowLogin(false)
+    navigate('/dashboard')
     setIsLoggedIn(true)
-    setActivePage('dashboard')
   }
 
   function handleLogout() {
     clearToken()
     setIsLoggedIn(false)
-    setShowLogin(false)
+    navigate('/')
     setShowIssueModal(false)
     setInventoryItems([])
     setCategories([])
@@ -352,28 +387,19 @@ function App() {
   function renderPage() {
     if (!isLoggedIn) {
       if (showLogin) return <LoginPage onLogin={handleLogin} />
-      return <Home onLoginClick={() => setShowLogin(true)} />
-    }
-
-    if (loading) {
       return (
-        <section className="content-shell">
-          <p style={{ padding: '2rem', color: 'var(--text-muted, #888)' }}>Loading data…</p>
-        </section>
+        <Home
+          landingStats={landingStats}
+          landingStatsError={landingStatsError}
+          onLoginClick={() => navigate('/login')}
+          onHomeClick={() => navigate('/')}
+        />
       )
     }
 
-    if (error) {
-      return (
-        <section className="content-shell">
-          <div className="info-banner" style={{ background: 'var(--red-light, #fee)', color: '#c00' }}>
-            ⚠ Could not connect to backend: {error}. Make sure the server is running on port 8000.
-          </div>
-        </section>
-      )
-    }
+    const pageToRender = allowedPages.includes(activePage) ? activePage : 'dashboard'
 
-    switch (activePage) {
+    switch (pageToRender) {
       case 'inventory':
         return (
           <InventoryPage
@@ -396,7 +422,7 @@ function App() {
           <IssueReturnPage
             members={members}
             onContinue={() => setShowIssueModal(true)}
-            readOnly={isMember}
+            readOnly={false}
             userType={userType}
           />
         )
@@ -404,29 +430,29 @@ function App() {
         return (
           <ReturnPage
             members={members}
-            readOnly={isMember || isSuperAdmin}
+            readOnly={false}
             userType={userType}
             stores={stores}
             showToast={showToast}
           />
         )
       case 'members':
-        return <MembersPage members={members} onAddMember={() => window.alert('Add member flow.')} readOnly={isMember || isSuperAdmin} />
+        return <MembersPage members={members} onAddMember={() => window.alert('Add member flow.')} readOnly={isStoreAdmin} />
       case 'inspections':
-        return <InspectionsPage inspections={inspections} onNewInspection={() => window.alert('Create inspection flow.')} readOnly={isMember || isSuperAdmin} />
+        return <InspectionsPage inspections={inspections} onNewInspection={() => window.alert('Create inspection flow.')} readOnly={false} />
       case 'reports':
-        return <ReportsPage onExportReport={() => window.alert('Report export triggered.')} readOnly={isMember || isSuperAdmin} reports={reports} />
+        return <ReportsPage onExportReport={() => window.alert('Report export triggered.')} readOnly={false} reports={reports} />
       default:
         return (
           <DashboardPage
             onChangeRange={() => window.alert('Date range selector.')}
             onOpenIssue={() => setShowIssueModal(true)}
-            onOpenReports={() => setActivePage('reports')}
-            onOpenReturn={() => setActivePage('return')}
+            onOpenReports={() => navigate('/reports')}
+            onOpenReturn={() => navigate('/return')}
             onPageChange={() => { }}
-            readOnly={isMember || isSuperAdmin}
-            recentActivity={recentActivity}
-            summaryCards={summaryCards}
+            onRefresh={loadData}
+            telemetry={dashboardTelemetry}
+            loading={loading}
           />
         )
     }
@@ -439,7 +465,7 @@ function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <button className="sidebar-brand" type="button" onClick={() => setActivePage('dashboard')}>
+        <button className="sidebar-brand" type="button" onClick={() => navigate('/dashboard')}>
           <div className="sidebar-brand-mark">
             <span className="material-symbols-outlined">terrain</span>
           </div>
@@ -451,12 +477,12 @@ function App() {
 
         <nav className="sidebar-nav">
           <small>Main Navigation</small>
-          {pages.map((page, i) => (
+          {pages.filter((page) => allowedPages.includes(page.id)).map((page, i) => (
             <button
               key={page.id}
               type="button"
               className={`sidebar-link ${activePage === page.id ? 'active' : ''}`}
-              onClick={() => setActivePage(page.id)}
+              onClick={() => navigate(`/${page.id}`)}
               style={{ animationDelay: `${i * 40}ms` }}
             >
               <span className="material-symbols-outlined">{page.icon}</span>
@@ -467,11 +493,6 @@ function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="sidebar-settings" type="button">
-            <span className="material-symbols-outlined">settings</span>
-            <span>Settings</span>
-          </button>
-
           <div className="sidebar-profile">
             <div
               className="sidebar-avatar"
@@ -501,7 +522,26 @@ function App() {
       </aside>
 
       <div className="app-frame">
-        <main className="app-body">{renderPage()}</main>
+        <main className="app-body">
+          {loading ? (
+            <section className="content-shell">
+              <div className="workspace-state">
+                <span className="workspace-state-spinner" />
+                <strong>Loading expedition inventory</strong>
+                <span>Syncing equipment, stores, categories, and members.</span>
+              </div>
+            </section>
+          ) : error ? (
+            <section className="content-shell">
+              <div className="workspace-state workspace-state-error">
+                <span className="material-symbols-outlined">cloud_off</span>
+                <strong>Could not connect to the workspace</strong>
+                <span>{error}. Make sure the backend server is running on port 8000.</span>
+                <button className="primary-btn" onClick={loadData} type="button">Retry sync</button>
+              </div>
+            </section>
+          ) : renderPage()}
+        </main>
       </div>
 
       {

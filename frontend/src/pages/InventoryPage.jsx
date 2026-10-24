@@ -14,6 +14,7 @@ const initialFormState = {
 function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], canAddProduct, canDeleteProduct, isStoreAdmin, onDeleteItem, onManageEquipment, onManageCategories, onManageStores, onPageChange, onUpdateItem, onRefresh }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All Categories")
+  const [selectedStore, setSelectedStore] = useState("All Stores")
   const [selectedStatus, setSelectedStatus] = useState("All Statuses")
   const [formData, setFormData] = useState({})
   const [refreshing, setRefreshing] = useState(false)
@@ -40,23 +41,29 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
     return ["All Statuses", ...statuses]
   }, [inventoryItems])
 
+  const storeOptions = useMemo(() => {
+    const stores = new Set(inventoryItems.map((item) => item.store_name).filter(Boolean))
+    return ["All Stores", ...stores]
+  }, [inventoryItems])
+
   const filteredItems = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
     return inventoryItems.filter((item) => {
       const matchesSearch =
         !normalizedSearch ||
-        item.id.toLowerCase().includes(normalizedSearch) ||
-        item.name.toLowerCase().includes(normalizedSearch) ||
-        item.category.toLowerCase().includes(normalizedSearch)
+        String(item.id).toLowerCase().includes(normalizedSearch) ||
+        String(item.name).toLowerCase().includes(normalizedSearch) ||
+        String(item.category).toLowerCase().includes(normalizedSearch)
 
       const matchesCategory = selectedCategory === "All Categories" || item.category === selectedCategory
+      const matchesStore = selectedStore === "All Stores" || item.store_name === selectedStore
       const matchesStatus = selectedStatus === "All Statuses" || item.status === selectedStatus
       const hasQuantity = item.quantity > 0 || item.status !== 'Available' // Show if it has stock or if it's issued/reserved (status != Available)
 
-      return matchesSearch && matchesCategory && matchesStatus && hasQuantity
+      return matchesSearch && matchesCategory && matchesStore && matchesStatus && hasQuantity
     })
-  }, [inventoryItems, searchTerm, selectedCategory, selectedStatus])
+  }, [inventoryItems, searchTerm, selectedCategory, selectedStore, selectedStatus])
 
   useEffect(() => {
     // kept for potential future use
@@ -66,11 +73,32 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
     event.preventDefault()
   }
 
+  function exportCsv() {
+    const headers = ['ID', 'Item Name', 'Store', 'Category', 'Condition', 'Quantity', 'Last Inspected', 'Status']
+    const rows = filteredItems.map((item) => [
+      item.id, item.name, item.store_name, item.category, item.condition,
+      item.quantity, item.inspected, item.status,
+    ])
+    const csv = [headers, ...rows]
+      .map((row) => row.map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(','))
+      .join('\n')
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'giripremi-inventory.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <>
-      <section className="content-shell">
-        <div className="section-head compact">
-          <h2>Inventory</h2>
+      <section className="content-shell inventory-reference-page">
+        <div className="inventory-reference-heading">
+          <div>
+            <span className="inventory-reference-eyebrow">Active Expedition Vault</span>
+            <h1>Equipment Inventory</h1>
+            <p>Live inventory across all stores and high-altitude depots.</p>
+          </div>
           <div className="inventory-actions">
             {canAddProduct ? (
               <>
@@ -79,27 +107,29 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
                   <span>Manage Categories</span>
                 </button>
                 <button className="secondary-btn" onClick={() => onManageStores && onManageStores()} type="button">
-                  <span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>store</span>
+                  <span className="material-symbols-outlined">warehouse</span>
                   <span>Manage Stores</span>
                 </button>
-                <button className="secondary-btn" onClick={handleRefresh} type="button" title="Refresh Inventory" disabled={refreshing}>
-                  <span className={`material-symbols-outlined${refreshing ? ' spin' : ''}`} style={{ fontSize: '1.1rem' }}>refresh</span>
-                  <span>{refreshing ? 'Refreshing…' : 'Refresh'}</span>
+                <button className="secondary-btn inventory-refresh-btn" onClick={handleRefresh} type="button" title="Synchronize Cache" disabled={refreshing}>
+                  <span className={`material-symbols-outlined${refreshing ? ' spin' : ''}`}>sync</span>
                 </button>
                 <button className="primary-btn" onClick={onManageEquipment} type="button">
-                  <span className="material-symbols-outlined">inventory_2</span>
-                  <span>Manage Equipment</span>
+                  <span className="material-symbols-outlined">add_box</span>
+                  <span>+ Manage Equipment</span>
                 </button>
               </>
             ) : null}
           </div>
         </div>
 
-        {isStoreAdmin ? (
-          <div className="info-banner">Store Admin fakt customer la dilya nantarach item status update karu shakto.</div>
-        ) : null}
+        <div className="inventory-reference-summary">
+          <div><span className="material-symbols-outlined">inventory_2</span><strong>{inventoryItems.length}</strong><small>Total inventory records</small></div>
+          <div><span className="material-symbols-outlined">check_circle</span><strong>{inventoryItems.filter((item) => item.status === 'Available').length}</strong><small>Available records</small></div>
+          <div><span className="material-symbols-outlined">storefront</span><strong>{new Set(inventoryItems.map((item) => item.store_name)).size}</strong><small>Active locations</small></div>
+          <div><span className="material-symbols-outlined">category</span><strong>{new Set(inventoryItems.map((item) => item.category)).size}</strong><small>Equipment categories</small></div>
+        </div>
 
-        <div className="table-shell">
+        <div className="table-shell inventory-reference-table">
           <div className="filters">
             <div className="search-wrap">
               <span className="material-symbols-outlined">search</span>
@@ -116,16 +146,25 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
+              <select onChange={(event) => setSelectedStore(event.target.value)} value={selectedStore}>
+                {storeOptions.map((store) => (
+                  <option key={store} value={store}>{store}</option>
+                ))}
+              </select>
               <select onChange={(event) => setSelectedStatus(event.target.value)} value={selectedStatus}>
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>{status}</option>
                 ))}
               </select>
+              <button className="inventory-export-btn" onClick={exportCsv} type="button" title="Export Manifest as CSV">
+                <span className="material-symbols-outlined">file_download</span>
+                <span>Export CSV</span>
+              </button>
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto', width: '100%', border: '1px solid var(--border)', borderRadius: '8px' }}>
-            <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse' }}>
+          <div className="inventory-table-scroll">
+            <table>
               <thead>
                 <tr>
                   <th>ID</th>
@@ -142,35 +181,29 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
               <tbody>
                 {filteredItems.length > 0 ? filteredItems.map((item) => (
                   <tr key={item.id}>
-                    <td style={{ fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.8 }}>{item.id}</td>
+                    <td className="inventory-id">{item.id}</td>
                     <td>
                       <div className="item-cell">
-                        <span className="material-symbols-outlined">{item.icon}</span>
-                        <span>{item.name}</span>
+                        <span className="inventory-item-icon material-symbols-outlined">{item.icon}</span>
+                        <span><strong>{item.name}</strong><small>{item.condition || 'Equipment record'}</small></span>
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 500 }}>{item.store_name}</span>
+                      <span className="inventory-store">{item.store_name}</span>
                     </td>
                     <td>
-                      <span className="category-chip">{item.category}</span>
+                      <span className="inventory-category">{item.category}</span>
                     </td>
                     <td>
-                      <span style={{
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        backgroundColor: item.condition === 'NEW' ? '#dcfce7' : item.condition === 'MODERATE' ? '#fef9c3' : '#f3f4f6',
-                        color: item.condition === 'NEW' ? '#166534' : item.condition === 'MODERATE' ? '#854d0e' : '#374151'
-                      }}>
+                      <span className={`inventory-condition ${item.condition === 'NEW' ? 'new' : item.condition === 'MODERATE' ? 'moderate' : ''}`}>
                         {item.condition}
                       </span>
                     </td>
                     <td>{item.quantity}</td>
                     <td>{item.inspected}</td>
                     <td>
-                      <span className={`status-pill ${item.statusTone}`}>
+                      <span className={`inventory-status ${item.statusTone}`}>
+                        <i />
                         {item.status}
                       </span>
                     </td>
@@ -207,6 +240,7 @@ function InventoryPage({ addEquipmentRequest, inventoryItems, categories = [], c
             <small style={{ fontSize: '0.75rem', opacity: 0.65 }}>
               {filteredItems.length} of {inventoryItems.length} items
             </small>
+            <small className="inventory-reference-note">Inventory data synced from the active backend</small>
             <div className="pager">
               <button className="secondary-btn" style={{ minHeight: 32, padding: '0.3rem 0.75rem', fontSize: '0.8rem' }} onClick={() => onPageChange("previous")} type="button">Prev</button>
               <button className="primary-btn pager-active" style={{ minHeight: 32, padding: '0.3rem 0.6rem', fontSize: '0.8rem' }} onClick={() => onPageChange(1)} type="button">1</button>

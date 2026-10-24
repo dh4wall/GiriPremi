@@ -32,7 +32,7 @@ function StoresModal({ stores, onClose, onAddStore, onDeleteStore }) {
 
     return (
         <div className="modal-backdrop" role="presentation">
-            <div className="equipment-modal" style={{ maxWidth: 600, width: '100%' }}>
+            <div className="equipment-modal reference-management-modal reference-stores-modal">
                 {/* Header */}
                 <div className="modal-head">
                     <div>
@@ -45,7 +45,7 @@ function StoresModal({ stores, onClose, onAddStore, onDeleteStore }) {
                 </div>
 
                 {/* Action bar */}
-                <div style={{ padding: '1rem 1.5rem 0' }}>
+                <div className="management-action-area">
                     <button
                         className="primary-btn"
                         type="button"
@@ -58,7 +58,7 @@ function StoresModal({ stores, onClose, onAddStore, onDeleteStore }) {
 
                 {/* Add Store Form */}
                 {showForm && (
-                    <form onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
+                    <form className="management-form" onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
                         <div className="equipment-modal-body" style={{ gap: '0.6rem', padding: '0.5rem 0' }}>
                             <label htmlFor="store-name">Store Name *</label>
                             <input
@@ -119,7 +119,7 @@ function StoresModal({ stores, onClose, onAddStore, onDeleteStore }) {
                 )}
 
                 {/* Store list */}
-                <div style={{ padding: '1.5rem' }}>
+                <div className="management-list" style={{ padding: '1.5rem' }}>
                     <p style={{ fontSize: '0.8rem', marginBottom: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
                         Existing Stores
                     </p>

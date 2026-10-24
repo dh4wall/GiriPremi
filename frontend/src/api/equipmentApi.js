@@ -1,7 +1,7 @@
 // API functions for equipment endpoints
 import { getAuthHeaders } from './authApi'
 
-const BASE = '/api'
+import { API_BASE_URL as BASE } from './config'
 
 export async function fetchEquipment() {
     const res = await fetch(`${BASE}/equipment/`, { headers: getAuthHeaders() })

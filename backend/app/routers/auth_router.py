@@ -48,6 +48,12 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             detail="Account is disabled. Contact administration.",
         )
 
+    if user.user_type == "member":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Member accounts are managed by administrators and cannot log in.",
+        )
+
     token_data = {
         "sub": str(user.id),
         "email": user.email,

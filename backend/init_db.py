@@ -8,6 +8,8 @@ Default seeded credentials
   superAdmin  →  admin@giripremi.com   / Admin@123
   storeAdmin  →  store@giripremi.com   / Store@123
   member      →  member@giripremi.com  / Member@123
+  demo admin  → demo.admin@giripremi.com / DemoAdmin@123
+  demo store  → demo.store@giripremi.com / DemoStore@123
 """
 
 from app.database import engine, Base, SessionLocal
@@ -67,6 +69,22 @@ def init():
                 "contact_number": "",
                 "is_active": True,
             },
+            {
+                "full_name": "Demo Super Admin",
+                "email": "demo.admin@giripremi.com",
+                "password": hash_password("DemoAdmin@123"),
+                "user_type": "superAdmin",
+                "contact_number": "",
+                "is_active": True,
+            },
+            {
+                "full_name": "Demo Store Admin",
+                "email": "demo.store@giripremi.com",
+                "password": hash_password("DemoStore@123"),
+                "user_type": "storeAdmin",
+                "contact_number": "",
+                "is_active": True,
+            },
         ]
 
         for u in seed_users:
@@ -84,6 +102,8 @@ def init():
     print("  superAdmin  →  admin@giripremi.com   / Admin@123")
     print("  storeAdmin  →  store@giripremi.com   / Store@123")
     print("  member      →  member@giripremi.com  / Member@123")
+    print("  demo admin  →  demo.admin@giripremi.com / DemoAdmin@123")
+    print("  demo store  →  demo.store@giripremi.com / DemoStore@123")
 
 
 if __name__ == "__main__":

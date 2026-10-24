@@ -8,17 +8,18 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # Database
-    db_user: str = "root"
-    db_password: str = "your_password_here"
-    db_host: str = "localhost"
+    db_user: str
+    db_password: str
+    db_host: str
     db_port: int = 3306
-    db_name: str = "equipment"
-    database_url: str = ""
+    db_name: str
+    database_url: str
 
     # JWT
-    secret_key: str = "giripremi-super-secret-jwt-key-change-in-production-2024"
+    secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 480
+    frontend_origins: str = ""
 
     class Config:
         env_file = ".env"

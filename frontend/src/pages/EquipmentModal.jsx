@@ -73,7 +73,7 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
 
     return (
         <div className="modal-backdrop" role="presentation">
-            <div className="equipment-modal" style={{ maxWidth: 720, width: '100%' }}>
+            <div className="equipment-modal reference-management-modal reference-equipment-modal">
                 {/* Header */}
                 <div className="modal-head">
                     <div>
@@ -86,8 +86,8 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
                 </div>
 
                 {/* Action bar and File Preview */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 1.5rem 0' }}>
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <div className="management-action-area">
+                    <div className="management-action-row">
                         <button
                             className="primary-btn"
                             type="button"
@@ -107,7 +107,7 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
                                 <span>Import from Excel</span>
                             </button>
                         ) : (
-                            <div style={{
+                            <div className="management-file-chip" style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',
@@ -147,7 +147,7 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
                 </div>
 
                 {importStatus && (
-                    <div style={{
+                    <div className="management-import-status" style={{
                         margin: '0.75rem 1.5rem 0',
                         padding: '0.8rem 1rem',
                         borderRadius: '8px',
@@ -187,7 +187,7 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
 
                 {/* Add Equipment Form */}
                 {showForm && (
-                    <form onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
+                    <form className="management-form" onSubmit={handleSubmit} style={{ padding: '0.5rem 1.5rem 0' }}>
                         <div className="equipment-modal-body" style={{ gap: '0.6rem', padding: '0.5rem 0' }}>
                             <label htmlFor="eq-name">Equipment Name *</label>
                             <input
@@ -297,7 +297,7 @@ function EquipmentModal({ categories, inventoryItems, onClose, onAddEquipment, o
 
                 {/* Excel format hint */}
                 {!showForm && (
-                    <div style={{ padding: '1rem 1.5rem 1.5rem', color: 'var(--text-soft)', fontSize: '0.8rem' }}>
+                    <div className="management-help" style={{ padding: '1rem 1.5rem 1.5rem', color: 'var(--text-soft)', fontSize: '0.8rem' }}>
                         <p style={{ margin: '0.75rem 0 0.3rem', fontWeight: 600, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
                             Excel Import Format
                         </p>
