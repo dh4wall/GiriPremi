@@ -14,7 +14,9 @@ DATABASE_URL = settings.get_database_url()
 
 engine = create_engine(
     DATABASE_URL,
-    echo=True  # shows SQL queries in console (good for debugging)
+    pool_pre_ping=True,
+    pool_recycle=300,
+    echo=False
 )
 
 SessionLocal = sessionmaker(

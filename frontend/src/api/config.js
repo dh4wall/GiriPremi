@@ -1,4 +1,5 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+const rawBase = (import.meta.env.VITE_API_BASE_URL || '/api').trim()
+export const API_BASE_URL = rawBase.replace(/\/+$/, '')
 
 export const landingMedia = {
   logo: import.meta.env.VITE_LANDING_LOGO_URL || '',

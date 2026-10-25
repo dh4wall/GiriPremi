@@ -47,11 +47,12 @@ const pages = [
   { id: 'members', label: 'Members', icon: 'group' },
   { id: 'inspections', label: 'Inspections', icon: 'verified' },
   { id: 'reports', label: 'Reports', icon: 'analytics' },
+  { id: 'settings', label: 'Settings', icon: 'settings' },
 ]
 
 const ROLE_PAGE_ACCESS = {
   superAdmin: pages.map((page) => page.id),
-  storeAdmin: ['dashboard', 'inventory', 'issue-return', 'return', 'members', 'inspections', 'reports'],
+  storeAdmin: ['dashboard', 'inventory', 'issue-return', 'return', 'members', 'inspections', 'reports', 'settings'],
 }
 
 // ─── Store name → id mapping (matches seeded stores) ─────────────────────────
@@ -463,65 +464,83 @@ function App() {
   if (!isLoggedIn) return renderPage()
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <button className="sidebar-brand" type="button" onClick={() => navigate('/dashboard')}>
-          <div className="sidebar-brand-mark">
-            <span className="material-symbols-outlined">terrain</span>
-          </div>
-          <div>
-            <strong>Giripremi Store</strong>
-            <small>IMS Portal</small>
-          </div>
-        </button>
-
-        <nav className="sidebar-nav">
-          <small>Main Navigation</small>
-          {pages.filter((page) => allowedPages.includes(page.id)).map((page, i) => (
-            <button
-              key={page.id}
-              type="button"
-              className={`sidebar-link ${activePage === page.id ? 'active' : ''}`}
-              onClick={() => navigate(`/${page.id}`)}
-              style={{ animationDelay: `${i * 40}ms` }}
-            >
-              <span className="material-symbols-outlined">{page.icon}</span>
-              <span>{page.label}</span>
-              {activePage === page.id && <span className="sidebar-active-dot" />}
-            </button>
-          ))}
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="sidebar-profile">
-            <div
-              className="sidebar-avatar"
-              style={{ background: roleInfo.bg, color: roleInfo.color }}
-            >
-              {roleInfo.initials}
+    <div className="app-shell min-h-screen bg-surface">
+      <aside className="sidebar fixed left-0 top-0 h-full w-72 bg-surface-container-low/90 backdrop-blur-xl z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(13,37,56,0.04)]">
+        <div className="flex flex-col sidebar-top">
+          <div
+            className="sidebar-brand h-20 px-space-lg flex items-center gap-space-md cursor-pointer select-none"
+            onClick={() => navigate('/dashboard')}
+          >
+            <div className="sidebar-brand-mark w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+              <span className="material-symbols-outlined text-[22px]">terrain</span>
             </div>
-            <div className="sidebar-profile-info">
-              <strong>{fullName || roleInfo.label}</strong>
-              <span
-                className={`mini-tag ${roleInfo.badge}`}
-                style={{ marginTop: '2px' }}
+            <div className="flex flex-col sidebar-brand-text">
+              <span className="sidebar-brand-title font-headline-sm text-headline-sm tracking-tight text-primary leading-tight">Giripremi Store</span>
+              <span className="sidebar-brand-subtitle font-label-md text-label-md uppercase tracking-wider text-secondary">IMS Portal</span>
+            </div>
+          </div>
+
+          <div className="sidebar-nav-wrap px-space-md py-space-sm">
+            <nav className="sidebar-nav flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-medium rounded-xl shadow-sm">
+              {pages.filter((page) => allowedPages.includes(page.id)).map((page) => {
+                const isActive = activePage === page.id
+                return (
+                  <button
+                    key={page.id}
+                    type="button"
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`sidebar-link flex items-center gap-space-md px-space-md py-space-sm rounded-xl transition-all w-full text-left border-0 cursor-pointer ${
+                      isActive
+                        ? 'active bg-primary-container text-on-primary font-medium rounded-xl shadow-sm'
+                        : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface bg-transparent'
+                    }`}
+                    onClick={() => {
+                      if (page.id === 'settings') {
+                        setShowStoresModal(true)
+                      } else {
+                        navigate(`/${page.id}`)
+                      }
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{page.icon}</span>
+                    <span className="font-body-md text-body-md sidebar-link-label">{page.label}</span>
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+        </div>
+
+        <div className="sidebar-footer p-space-md">
+          <div className="sidebar-profile flex items-center justify-between p-space-sm bg-surface-container-lowest/80 backdrop-blur-md rounded-xl shadow-[0_1px_8px_rgba(13,37,56,0.04)]">
+            <div className="sidebar-profile-user flex items-center gap-space-sm overflow-hidden">
+              <div
+                className="sidebar-avatar w-9 h-9 rounded-xl bg-primary-container text-on-primary flex items-center justify-center font-label-md text-label-md font-semibold tracking-wider flex-shrink-0"
               >
-                {roleInfo.label}
-              </span>
+                {roleInfo.initials}
+              </div>
+              <div className="sidebar-profile-info flex flex-col truncate">
+                <span className="sidebar-profile-name font-body-sm text-body-sm font-semibold text-on-surface truncate">
+                  {fullName || roleInfo.label}
+                </span>
+                <span className="sidebar-profile-role font-label-sm text-label-sm uppercase tracking-wider text-secondary truncate">
+                  {roleInfo.label}
+                </span>
+              </div>
             </div>
             <button
-              className="sidebar-logout"
+              className="sidebar-logout w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-error transition-colors flex-shrink-0 bg-transparent border-0 cursor-pointer"
               type="button"
               onClick={handleLogout}
               title="Logout"
             >
-              <span className="material-symbols-outlined">logout</span>
+              <span className="material-symbols-outlined text-[18px]">logout</span>
             </button>
           </div>
         </div>
       </aside>
 
-      <div className="app-frame">
+      <div className="app-frame flex flex-col min-h-screen">
         <main className="app-body">
           {loading ? (
             <section className="content-shell">
@@ -536,7 +555,7 @@ function App() {
               <div className="workspace-state workspace-state-error">
                 <span className="material-symbols-outlined">cloud_off</span>
                 <strong>Could not connect to the workspace</strong>
-                <span>{error}. Make sure the backend server is running on port 8000.</span>
+                <span>{error}. Make sure the backend API server is online and reachable.</span>
                 <button className="primary-btn" onClick={loadData} type="button">Retry sync</button>
               </div>
             </section>

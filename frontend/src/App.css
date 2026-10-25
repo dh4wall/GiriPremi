@@ -104,21 +104,38 @@ table {
 }
 
 .app-shell {
-  display: grid;
-  grid-template-columns: 264px 1fr;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  background: var(--color-surface, #f8f9ff);
+  position: relative;
 }
 
 .sidebar {
-  background: var(--surface);
-  border-right: 1px solid var(--line);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 288px;
+  z-index: 50;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  min-height: 0;
-  overflow: hidden;
-  padding: 1rem 0;
+  justify-content: space-between;
+  background: rgba(239, 244, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 8px rgba(13, 37, 56, 0.04);
+  border-right: 1px solid rgba(195, 199, 205, 0.35);
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.app-frame {
+  margin-left: 288px;
+  width: calc(100% - 288px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .sidebar-brand {
@@ -1528,10 +1545,6 @@ select {
 }
 
 @media (max-width: 1180px) {
-  .app-shell {
-    grid-template-columns: 220px 1fr;
-  }
-
   .card-grid,
   .issue-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1583,12 +1596,12 @@ select {
 }
 
 @media (max-width: 720px) {
-
   .app-body,
   .app-topbar {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+}
 
   /* Popup contract: these rules intentionally come last so page-level legacy
      selectors cannot alter the Manage dialogs or their add forms. */
@@ -1731,9 +1744,11 @@ select {
   .modal-backdrop .reference-management-modal .management-form .modal-foot {
     align-items: center !important;
     display: flex !important;
-    gap: .75rem !important;
-    justify-content: flex-start !important;
-    padding: 1rem 0 0 !important;
+    gap: 1rem !important;
+    justify-content: flex-end !important;
+    padding: 1.25rem 0 0.25rem !important;
+    border-top: 1px solid rgba(195, 199, 205, 0.4) !important;
+    margin-top: 0.75rem !important;
   }
 
   .modal-backdrop .reference-management-modal .management-list {
@@ -2193,176 +2208,283 @@ select {
     color: #263a58;
   }
 
-  /* Reference sidebar and management surfaces */
+  /* ── Reference Fixed Sidebar (matches UI Reference) ── */
+  .app-shell {
+    min-height: 100vh;
+    background: #f8f9ff !important;
+    position: relative;
+    display: block !important;
+  }
+
   .app-shell .sidebar {
-    background: #eef3ff !important;
-    border-right: 1px solid #dbe4f4 !important;
-    box-shadow: none !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    width: 288px !important;
+    z-index: 50 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background: rgba(239, 244, 255, 0.92) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    box-shadow: 0 1px 8px rgba(13, 37, 56, 0.04) !important;
+    border-right: 1px solid rgba(195, 199, 205, 0.35) !important;
     padding: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
 
-  .app-shell .sidebar-brand {
-    align-items: center;
-    background: transparent;
-    border: 0;
+  .app-shell .sidebar-top {
     display: flex;
-    gap: 1rem;
-    justify-content: flex-start;
-    margin: 0;
-    padding: 1.45rem 1.8rem 2.8rem;
-    text-align: left;
-  }
-
-  .app-shell .sidebar-brand-mark {
-    background: #102b43 !important;
-    border-radius: 14px !important;
-    color: #fff !important;
-    height: 50px !important;
-    width: 50px !important;
-  }
-
-  .app-shell .sidebar-brand-mark .material-symbols-outlined {
-    font-size: 27px;
-  }
-
-  .app-shell .sidebar-brand strong {
-    color: #0b1c30 !important;
-    font: 700 23px/1.1 'Space Grotesk', sans-serif !important;
-    letter-spacing: -.03em;
-  }
-
-  .app-shell .sidebar-brand small {
-    color: #006398 !important;
-    font: 500 12px 'JetBrains Mono', monospace !important;
-    letter-spacing: .12em;
-    margin-top: .35rem;
-  }
-
-  .app-shell .sidebar-nav {
-    gap: .2rem !important;
-    padding: 0 1.2rem !important;
-  }
-
-  .app-shell .sidebar-nav small {
-    color: #8b9bb5 !important;
-    font: 600 11px 'JetBrains Mono', monospace !important;
-    letter-spacing: .14em;
-    padding: 0 .4rem 1.35rem !important;
-  }
-
-  .app-shell .sidebar-link {
-    align-items: center;
-    background: transparent !important;
-    border: 0;
-    border-left: 3px solid transparent;
-    border-radius: 16px !important;
-    box-shadow: none !important;
-    color: #536d92 !important;
-    font: 500 17px/1.2 'Geist', sans-serif !important;
-    gap: 1rem;
-    min-height: 56px;
-    padding: .7rem 1rem !important;
-    text-align: left;
+    flex-direction: column;
     width: 100%;
   }
 
+  .app-shell .sidebar-brand {
+    height: 80px !important;
+    padding: 0 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    text-align: left !important;
+    margin: 0 !important;
+    flex-shrink: 0;
+  }
+
+  .app-shell .sidebar-brand-mark {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    background: #0d2538 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 1px 2px rgba(13, 37, 56, 0.08) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .app-shell .sidebar-brand-mark .material-symbols-outlined {
+    font-size: 22px !important;
+    color: #ffffff !important;
+    line-height: 1;
+  }
+
+  .app-shell .sidebar-brand-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+  }
+
+  .app-shell .sidebar-brand-title {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 18px !important;
+    line-height: 26px !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.015em !important;
+    color: #000f1d !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  .app-shell .sidebar-brand-subtitle {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: #006398 !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .app-shell .sidebar-nav-wrap {
+    padding: 0.5rem 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .app-shell .sidebar-nav {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .app-shell .sidebar-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 12px !important;
+    font-family: 'Geist', 'Inter', -apple-system, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 400 !important;
+    color: #43474c !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-left: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    text-align: left !important;
+    transition: all 0.15s ease !important;
+    min-height: 40px !important;
+    box-sizing: border-box !important;
+  }
+
   .app-shell .sidebar-link .material-symbols-outlined {
-    color: #5d779c;
-    font-size: 24px;
+    font-size: 20px !important;
+    color: #43474c !important;
+    flex-shrink: 0 !important;
+    transition: color 0.15s ease !important;
   }
 
   .app-shell .sidebar-link:hover {
-    background: rgba(220,233,255,.55) !important;
-    color: #3767e8 !important;
+    background: #dce9ff !important;
+    color: #0b1c30 !important;
+  }
+
+  .app-shell .sidebar-link:hover .material-symbols-outlined {
+    color: #0b1c30 !important;
   }
 
   .app-shell .sidebar-link.active {
-    background: #e1ebff !important;
-    border-left-color: #3767e8;
-    color: #3767e8 !important;
-    font-weight: 700 !important;
+    background: #0d2538 !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(13, 37, 56, 0.12) !important;
   }
 
   .app-shell .sidebar-link.active .material-symbols-outlined {
-    color: #3767e8;
-  }
-
-  .app-shell .sidebar-active-dot {
-    background: #3767e8 !important;
-    height: 8px;
-    width: 8px;
+    color: #ffffff !important;
   }
 
   .app-shell .sidebar-footer {
-    gap: .55rem !important;
-    padding: 1.2rem !important;
+    padding: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: auto !important;
   }
 
   .app-shell .sidebar-profile {
-    align-items: center;
-    background: #fff !important;
-    border: 1px solid #d5e0f1 !important;
-    border-radius: 14px !important;
-    display: flex;
-    min-height: 70px;
-    padding: .8rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.5rem !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 8px rgba(13, 37, 56, 0.04) !important;
+    border: 1px solid rgba(203, 219, 245, 0.5) !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .app-shell .sidebar-profile-user {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    overflow: hidden !important;
+    min-width: 0 !important;
   }
 
   .app-shell .sidebar-avatar {
-    background: #f2e9ff !important;
-    border-radius: 50%;
-    color: #8a4fff !important;
-    flex: 0 0 44px;
-    font-size: 16px;
-    height: 44px;
-    width: 44px;
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+    border-radius: 12px !important;
+    background: #0d2538 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
   }
 
   .app-shell .sidebar-profile-info {
-    min-width: 0;
-    padding-left: .7rem;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
   }
 
-  .app-shell .sidebar-profile-info strong {
+  .app-shell .sidebar-profile-name {
+    font-family: 'Geist', 'Inter', -apple-system, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+    font-weight: 600 !important;
     color: #0b1c30 !important;
-    font-size: 16px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  .app-shell .sidebar-profile-info .mini-tag {
-    background: #f0e6ff !important;
-    color: #8a4fff !important;
-    display: block;
-    font: 700 10px 'JetBrains Mono', monospace;
-    letter-spacing: .03em;
-    margin-top: .35rem !important;
-    padding: .25rem .55rem;
+  .app-shell .sidebar-profile-role {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: #006398 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .app-shell .sidebar-logout {
-    align-self: flex-start;
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    color: #43474c !important;
     background: transparent !important;
     border: 0 !important;
-    border-radius: 8px;
-    color: #7890af !important;
-    font-size: 16px;
-    gap: .45rem;
-    justify-content: flex-start;
-    min-height: 34px;
-    padding: .2rem 0 !important;
-    width: auto;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin-left: auto !important;
+    padding: 0 !important;
   }
 
   .app-shell .sidebar-logout .material-symbols-outlined {
-    font-size: 25px;
+    font-size: 18px !important;
   }
 
   .app-shell .sidebar-logout:hover {
-    background: transparent !important;
-    color: #3767e8 !important;
+    background: #dce9ff !important;
+    color: #ba1a1a !important;
   }
 
   .app-shell .app-frame {
-    background: #f8f9ff;
+    margin-left: 288px !important;
+    width: calc(100% - 288px) !important;
+    min-height: 100vh !important;
+    background: #f8f9ff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
   }
 
   .reference-management-modal {
@@ -2464,83 +2586,6 @@ select {
     font-size: 13px !important;
   }
 
-  /* Match the supplied dashboard HTML tokens; keep these controls compact. */
-  .app-shell .sidebar-brand {
-    padding: 1rem 1.5rem !important;
-  }
-
-  .app-shell .sidebar-brand-mark {
-    height: 40px !important;
-    width: 40px !important;
-  }
-
-  .app-shell .sidebar-brand strong {
-    font-size: 18px !important;
-  }
-
-  .app-shell .sidebar-nav {
-    padding: .5rem 1rem !important;
-  }
-
-  .app-shell .sidebar-link {
-    border-left: 0 !important;
-    border-radius: 12px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    min-height: 0;
-    padding: .55rem .85rem !important;
-  }
-
-  .app-shell .sidebar-link.active {
-    background: #0d2538 !important;
-    color: #fff !important;
-  }
-
-  .app-shell .sidebar-link.active .material-symbols-outlined,
-  .app-shell .sidebar-link.active .sidebar-active-dot {
-    color: #fff !important;
-  }
-
-  .app-shell .sidebar-link .material-symbols-outlined {
-    font-size: 20px;
-  }
-
-  .app-shell .sidebar-footer {
-    padding: 1rem !important;
-  }
-
-  .app-shell .sidebar-profile {
-    min-height: 0;
-    padding: .5rem !important;
-  }
-
-  .app-shell .sidebar-avatar {
-    flex-basis: 36px;
-    height: 36px;
-    width: 36px;
-  }
-
-  .app-shell .sidebar-profile-info strong {
-    font-size: 12px !important;
-  }
-
-  .app-shell .sidebar-profile-info .mini-tag {
-    font-size: 10px;
-  }
-
-  .app-shell .sidebar-logout {
-    background: transparent !important;
-    border: 0 !important;
-    color: #536b8b !important;
-    height: 32px;
-    min-height: 32px;
-    padding: 0 !important;
-    width: 32px;
-  }
-
-  .app-shell .sidebar-logout .material-symbols-outlined {
-    font-size: 18px;
-  }
 
   .reference-management-modal {
     border-radius: 12px !important;
@@ -2641,14 +2686,14 @@ select {
     font: 600 10px/14px 'JetBrains Mono', monospace !important;
   }
 
-  /* Unified reference theme for every page form and dialog */
-  .app-shell input,
-  .app-shell select,
+  /* Unified reference theme for form elements (excluding search bars and steppers) */
+  .app-shell input:not(.search-wrap input):not(.toolbar-search input):not(.store-stock-search-wrap input):not(.member-search-wrap input):not(.stepper-field),
+  .app-shell select:not(.select-wrap select),
   .app-shell textarea,
-  .modal-backdrop input,
-  .modal-backdrop select,
+  .modal-backdrop input:not(.search-wrap input):not(.toolbar-search input):not(.store-stock-search-wrap input):not(.stepper-field),
+  .modal-backdrop select:not(.select-wrap select),
   .modal-backdrop textarea,
-  .member-history-modal input,
+  .member-history-modal input:not(.search-wrap input):not(.toolbar-search input):not(.member-search-wrap input),
   .member-history-modal select,
   .member-history-modal textarea {
     background: #fff !important;
@@ -2660,17 +2705,115 @@ select {
     padding: .6rem .75rem !important;
   }
 
-  .app-shell input:focus,
-  .app-shell select:focus,
+  .app-shell input:not(.search-wrap input):not(.toolbar-search input):not(.store-stock-search-wrap input):not(.member-search-wrap input):not(.stepper-field):focus,
+  .app-shell select:not(.select-wrap select):focus,
   .app-shell textarea:focus,
-  .modal-backdrop input:focus,
-  .modal-backdrop select:focus,
+  .modal-backdrop input:not(.search-wrap input):not(.toolbar-search input):not(.store-stock-search-wrap input):not(.stepper-field):focus,
+  .modal-backdrop select:not(.select-wrap select):focus,
   .modal-backdrop textarea:focus,
-  .member-history-modal input:focus,
+  .member-history-modal input:not(.search-wrap input):not(.toolbar-search input):not(.member-search-wrap input):focus,
   .member-history-modal select:focus,
   .member-history-modal textarea:focus {
-    border-color: #73777d !important;
-    box-shadow: 0 0 0 3px rgba(195,199,205,.35) !important;
+    border-color: #006398 !important;
+    box-shadow: 0 0 0 3px rgba(0, 99, 152, 0.16) !important;
+  }
+
+  /* Pristine Single-Element Search Bars Across ALL Sections */
+  .search-wrap,
+  .toolbar-search,
+  .store-stock-search-wrap,
+  .member-search-wrap,
+  .inventory-reference-table .search-wrap {
+    display: flex !important;
+    align-items: center !important;
+    background: #fff !important;
+    border: 1px solid #c3c7cd !important;
+    border-radius: 10px !important;
+    padding: 0 0.85rem !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    box-sizing: border-box !important;
+    gap: 0.65rem !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    position: relative !important;
+  }
+
+  .search-wrap:focus-within,
+  .toolbar-search:focus-within,
+  .store-stock-search-wrap:focus-within,
+  .member-search-wrap:focus-within,
+  .inventory-reference-table .search-wrap:focus-within {
+    border-color: #006398 !important;
+    box-shadow: 0 0 0 3px rgba(0, 99, 152, 0.14) !important;
+    background: #fff !important;
+  }
+
+  .search-wrap .material-symbols-outlined,
+  .toolbar-search .material-symbols-outlined,
+  .store-stock-search-wrap .material-symbols-outlined,
+  .member-search-wrap .material-symbols-outlined,
+  .inventory-reference-table .search-wrap .material-symbols-outlined {
+    color: #73777d !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    user-select: none !important;
+    pointer-events: none !important;
+  }
+
+  .search-wrap input,
+  .toolbar-search input,
+  .store-stock-search-wrap input,
+  .member-search-wrap input,
+  .inventory-reference-table .search-wrap input,
+  .app-shell .search-wrap input,
+  .app-shell .toolbar-search input,
+  .app-shell .store-stock-search-wrap input,
+  .app-shell .member-search-wrap input,
+  .app-shell .inventory-reference-table .search-wrap input,
+  .modal-backdrop .search-wrap input,
+  .modal-backdrop .store-stock-search-wrap input {
+    border: 0 !important;
+    border-style: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: unset !important;
+    max-height: unset !important;
+    height: 100% !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    font: 400 13.5px/20px 'Geist', sans-serif !important;
+    color: #0b1c30 !important;
+  }
+
+  .search-wrap input:focus,
+  .toolbar-search input:focus,
+  .store-stock-search-wrap input:focus,
+  .member-search-wrap input:focus,
+  .inventory-reference-table .search-wrap input:focus,
+  .app-shell .search-wrap input:focus,
+  .app-shell .toolbar-search input:focus,
+  .app-shell .store-stock-search-wrap input:focus,
+  .app-shell .member-search-wrap input:focus,
+  .modal-backdrop .search-wrap input:focus {
+    border: 0 !important;
+    border-style: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .search-wrap input::placeholder,
+  .toolbar-search input::placeholder,
+  .store-stock-search-wrap input::placeholder,
+  .member-search-wrap input::placeholder,
+  .inventory-reference-table .search-wrap input::placeholder {
+    color: #73777d !important;
+    font: 400 13.5px/20px 'Geist', sans-serif !important;
   }
 
   .app-shell label,
@@ -2680,7 +2823,6 @@ select {
     font: 600 13px/18px 'Geist', sans-serif !important;
   }
 
-  .app-shell .primary-btn,
   .modal-backdrop .primary-btn,
   .member-history-modal .primary-btn {
     background: #006398 !important;
@@ -2691,13 +2833,11 @@ select {
     min-height: 40px;
   }
 
-  .app-shell .primary-btn:hover,
   .modal-backdrop .primary-btn:hover,
   .member-history-modal .primary-btn:hover {
     background: #004b73 !important;
   }
 
-  .app-shell .secondary-btn,
   .modal-backdrop .secondary-btn,
   .member-history-modal .secondary-btn {
     background: #eff4ff !important;
@@ -2709,83 +2849,162 @@ select {
   }
 
   .modal-backdrop {
-    background: rgba(11,28,48,.4) !important;
-    backdrop-filter: blur(6px) !important;
+    background: rgba(11,28,48,.5) !important;
+    backdrop-filter: blur(8px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    padding: 1.5rem !important;
+    box-sizing: border-box !important;
   }
 
   .modal-backdrop .issue-modal,
-  .modal-backdrop .equipment-modal {
+  .modal-backdrop .equipment-modal,
+  .modal-backdrop .reference-management-modal {
     background: #fff !important;
     border: 0 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 24px 48px -12px rgba(13,37,56,.2) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 24px 64px -12px rgba(13,37,56,.28) !important;
     color: #0b1c30 !important;
     max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
   }
 
   .modal-backdrop .modal-head {
     background: #fff !important;
-    border-bottom: 0 !important;
-    padding: 1.5rem !important;
+    border-bottom: 1px solid #e5eeff !important;
+    padding: 1.5rem 1.75rem !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
   }
 
   .modal-backdrop .modal-head h3 {
     color: #0b1c30 !important;
-    font: 600 24px/32px 'Space Grotesk', sans-serif !important;
+    font: 600 22px/28px 'Space Grotesk', sans-serif !important;
+    margin: 0 !important;
   }
 
-  .modal-backdrop .modal-head small {
-    color: #43474c !important;
-    font: 400 12px/18px 'Geist', sans-serif !important;
+  .modal-backdrop .modal-head small,
+  .modal-backdrop .modal-head p {
+    color: #555b63 !important;
+    font: 400 13px/18px 'Geist', sans-serif !important;
+    margin: 0.25rem 0 0 !important;
   }
 
-  .modal-backdrop .modal-head > button {
-    background: transparent !important;
+  .modal-backdrop .modal-head > button,
+  .modal-backdrop .modal-head .close-btn-x {
+    background: #eff4ff !important;
+    border: 0 !important;
     border-radius: 8px !important;
     color: #43474c !important;
-    height: 32px;
-    width: 32px;
+    height: 34px !important;
+    width: 34px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .modal-backdrop .modal-head > button:hover,
+  .modal-backdrop .modal-head .close-btn-x:hover {
+    background: #ffe5e5 !important;
+    color: #ba1a1a !important;
   }
 
   .modal-backdrop .modal-body,
   .modal-backdrop .equipment-modal-body,
-  .modal-backdrop .issue-page-body,
+  .modal-backdrop .issue-page-body {
+    padding: 1.5rem 1.75rem !important;
+    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    color: #0b1c30 !important;
+  }
+
   .modal-backdrop .modal-foot {
+    background: #f8f9ff !important;
+    border-top: 1px solid #e5eeff !important;
+    padding: 1.25rem 1.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 1rem !important;
+    flex-shrink: 0 !important;
     color: #0b1c30 !important;
   }
 
   .modal-backdrop .form-section {
-    background: #eff4ff;
-    border: 0;
-    border-radius: 12px;
-    padding: 1rem;
+    background: #f8f9ff !important;
+    border: 1px solid #e5eeff !important;
+    border-radius: 12px !important;
+    padding: 1.25rem 1.5rem !important;
+    margin-bottom: 1.25rem !important;
   }
 
   .modal-backdrop .form-section h4,
   .modal-backdrop .form-section legend {
-    color: #0b1c30;
-    font: 600 16px/24px 'Space Grotesk', sans-serif;
+    color: #0b1c30 !important;
+    font: 600 15px/22px 'Space Grotesk', sans-serif !important;
+    margin: 0 0 0.75rem !important;
   }
 
   .modal-backdrop .form-row {
-    gap: 1rem;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.25rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .modal-backdrop .form-row:last-child {
+    margin-bottom: 0 !important;
   }
 
   .modal-backdrop .form-group {
-    gap: .4rem;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.45rem !important;
+  }
+
+  .modal-backdrop .equipment-form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 1.25rem !important;
+    margin: 0.85rem 0 !important;
+  }
+
+  .modal-backdrop .management-form {
+    background: #f8f9ff !important;
+    border: 1px solid #e5eeff !important;
+    border-radius: 12px !important;
+    padding: 1.25rem 1.5rem !important;
+    margin: 0.5rem 1.5rem 1.5rem !important;
+  }
+
+  .modal-backdrop .management-action-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
   }
 
   .modal-backdrop .item-picker,
   .modal-backdrop .selected-items,
   .modal-backdrop .confirmation-panel {
-    background: #fff;
-    border: 1px solid #c3c7cd;
-    border-radius: 8px;
+    background: #fff !important;
+    border: 1px solid #c3c7cd !important;
+    border-radius: 8px !important;
   }
 
   .modal-backdrop .table-shell,
   .modal-backdrop table {
-    background: #fff;
+    background: #fff !important;
   }
 
   .modal-backdrop th {
@@ -2987,99 +3206,98 @@ select {
       padding-left: 1rem !important;
       padding-right: 1rem !important;
     }
-  }
 
-  .card-grid,
-  .issue-grid,
-  .equipment-form-grid {
-    grid-template-columns: 1fr;
-  }
+    .card-grid,
+    .issue-grid,
+    .equipment-form-grid {
+      grid-template-columns: 1fr;
+    }
 
-  .filter-group,
-  .inventory-actions,
-  .home-hero-actions,
-  .remember-row,
-  .table-foot,
-  .modal-foot {
-    align-items: stretch;
-    flex-direction: column;
-  }
+    .filter-group,
+    .inventory-actions,
+    .home-hero-actions,
+    .remember-row,
+    .table-foot,
+    .modal-foot {
+      align-items: stretch;
+      flex-direction: column;
+    }
 
-  .table-shell,
-  .issue-page-card {
-    overflow-x: auto;
-  }
+    .table-shell,
+    .issue-page-card {
+      overflow-x: auto;
+    }
 
-  .home-hero h1 {
-    font-size: 2.5rem;
-  }
+    .home-hero h1 {
+      font-size: 2.5rem;
+    }
 
-  .home-container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+    .home-container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
 
-  .home-hero {
-    padding-top: 3rem;
-  }
+    .home-hero {
+      padding-top: 3rem;
+    }
 
-  .home-wordmark {
-    font-size: 4rem;
-  }
+    .home-wordmark {
+      font-size: 4rem;
+    }
 
-  .home-hero-actions {
-    align-items: stretch;
-  }
+    .home-hero-actions {
+      align-items: stretch;
+    }
 
-  .home-primary-btn,
-  .home-secondary-btn {
-    justify-content: center;
-    width: 100%;
-  }
+    .home-primary-btn,
+    .home-secondary-btn {
+      justify-content: center;
+      width: 100%;
+    }
 
-  .home-mountain-panel {
-    height: 300px;
-    margin-top: 2.5rem;
-  }
+    .home-mountain-panel {
+      height: 300px;
+      margin-top: 2.5rem;
+    }
 
-  .home-telemetry {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
+    .home-telemetry {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
 
-  .home-telemetry-title {
-    min-width: 100%;
-  }
+    .home-telemetry-title {
+      min-width: 100%;
+    }
 
-  .home-telemetry-divider {
-    display: none;
-  }
+    .home-telemetry-divider {
+      display: none;
+    }
 
-  .home-telemetry-item {
-    padding-left: 0.6rem;
-  }
+    .home-telemetry-item {
+      padding-left: 0.6rem;
+    }
 
-  .home-section-heading,
-  .home-cta-inner {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+    .home-section-heading,
+    .home-cta-inner {
+      align-items: flex-start;
+      flex-direction: column;
+    }
 
-  .home-overview,
-  .home-capabilities {
-    padding: 3.5rem 0;
-  }
+    .home-overview,
+    .home-capabilities {
+      padding: 3.5rem 0;
+    }
 
-  .home-stats-grid,
-  .home-feature-grid {
-    grid-template-columns: 1fr;
-  }
+    .home-stats-grid,
+    .home-feature-grid {
+      grid-template-columns: 1fr;
+    }
 
-  .home-cta .home-primary-btn {
-    width: auto;
+    .home-cta .home-primary-btn {
+      width: auto;
+    }
   }
-}
 
 /* ════════════════════════════════════════════════════════════
    NEW: Glassmorphism Login Card
@@ -3490,56 +3708,67 @@ select {
 }
 
 .inventory-reference-heading .inventory-actions {
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: .65rem !important;
+  justify-content: flex-end !important;
 }
 
 .inventory-reference-heading .secondary-btn,
 .inventory-reference-heading .primary-btn {
-  border-radius: 8px;
-  font-family: 'Geist', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  gap: .45rem;
-  min-height: 40px;
-  padding: .6rem 1rem;
+  border-radius: 8px !important;
+  font-family: 'Geist', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  gap: .45rem !important;
+  min-height: 40px !important;
+  padding: .6rem 1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
 }
 
 .inventory-reference-heading .secondary-btn {
-  background: #eff4ff;
-  border: 0;
-  box-shadow: 0 1px 5px rgba(13,37,56,.05);
-  color: #0b1c30;
+  background: #eff4ff !important;
+  border: 1px solid #dce5f0 !important;
+  box-shadow: 0 1px 4px rgba(13,37,56,.05) !important;
+  color: #0b1c30 !important;
 }
 
 .inventory-reference-heading .secondary-btn:hover {
-  background: #e5eeff;
+  background: #e5eeff !important;
 }
 
 .inventory-reference-heading .secondary-btn .material-symbols-outlined {
-  color: #006398;
-  font-size: 18px;
+  color: #006398 !important;
+  font-size: 18px !important;
 }
 
 .inventory-reference-heading .inventory-refresh-btn {
-  padding: .6rem .75rem;
-  width: 42px;
+  padding: .6rem .75rem !important;
+  width: 40px !important;
+  height: 40px !important;
+  justify-content: center !important;
 }
 
 .inventory-reference-heading .inventory-refresh-btn .material-symbols-outlined {
-  color: #536b8b;
+  color: #536b8b !important;
 }
 
 .inventory-reference-heading .primary-btn {
-  background: #f65200;
-  box-shadow: 0 6px 16px rgba(246,82,0,.2);
-  color: #fff;
-  padding-left: 1.2rem;
-  padding-right: 1.2rem;
+  background: #f65200 !important;
+  border: 0 !important;
+  box-shadow: 0 4px 14px rgba(246,82,0,.25) !important;
+  color: #fff !important;
+  padding-left: 1.2rem !important;
+  padding-right: 1.2rem !important;
 }
 
 .inventory-reference-heading .primary-btn:hover {
-  background: #c73d00;
+  background: #c73d00 !important;
 }
 
 .inventory-reference-summary {
@@ -3583,21 +3812,41 @@ select {
 }
 
 .inventory-reference-table .filters {
-  background: #fff;
-  margin: 0;
-  padding: 1rem 1.25rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 1rem !important;
+  background: #fff !important;
+  margin: 0 !important;
+  padding: 1rem 1.25rem !important;
 }
 
 .inventory-reference-table .search-wrap {
-  border-radius: 8px;
-  max-width: 440px;
+  border-radius: 8px !important;
+  max-width: 440px !important;
+  flex: 1 1 300px !important;
+}
+
+.inventory-reference-table .filter-group {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: .6rem !important;
+  justify-content: flex-end !important;
 }
 
 .inventory-reference-table .filter-group select {
-  border-radius: 8px;
-  font-size: .8rem;
-  min-width: 150px;
-  padding: .65rem .75rem;
+  background: #eff4ff !important;
+  border: 1px solid #dce5f0 !important;
+  border-radius: 8px !important;
+  color: #33474c !important;
+  font-size: .8rem !important;
+  min-width: 140px !important;
+  min-height: 40px !important;
+  padding: .65rem .75rem !important;
 }
 
 .inventory-table-scroll {

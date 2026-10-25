@@ -47,7 +47,6 @@ backend/sample_categories.xlsx
 backend/sample_equipment.xlsx
 backend/generate_final_samples.py
 backend/generate_test_excel.py
-backend/requirements.txt
 backend/venv/
 frontend/node_modules/
 frontend/dist/
@@ -59,9 +58,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Environment Variables
+# Environment Variables and Secrets
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+*.pem
