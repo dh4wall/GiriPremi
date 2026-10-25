@@ -2,8 +2,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Vite_8-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite_6-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/Python_3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
   <img src="https://img.shields.io/badge/MySQL_8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
   <img src="https://img.shields.io/badge/TiDB_Cloud-F32B56?style=for-the-badge&logo=databricks&logoColor=white" alt="TiDB" />
@@ -28,7 +29,7 @@
 ```mermaid
 flowchart TD
     subgraph ClientLayer["🖥️ Frontend Client (Vercel CDN)"]
-        UI["React 19 SPA (Vite 8)"]
+        UI["React 18 SPA (Vite 6)"]
         State["Auth & Inventory Context"]
         Routing["Client-Side Routing (vercel.json)"]
     end
@@ -159,7 +160,7 @@ erDiagram
 
 | Domain | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend Framework** | **React 19 + Vite 8** | High-performance SPA with fast HMR |
+| **Frontend Framework** | **React 18 + Vite 6** | High-performance SPA with fast HMR |
 | **Styling & UX** | **Vanilla CSS + Material Symbols** | Premium dark-mode alpine aesthetics, responsive layouts, glassmorphism |
 | **Backend Framework** | **FastAPI (Python 3.12)** | Asynchronous, type-safe REST API endpoints |
 | **Database & ORM** | **SQLAlchemy + PyMySQL** | Relational mapping, connection resilience (`pool_pre_ping`, `pool_recycle`) |
